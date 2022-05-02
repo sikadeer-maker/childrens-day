@@ -82,7 +82,7 @@ function draw() {
         image(
           img_pressed,
           cx,
-          cy-100,
+          cy - 100,
           width,
           (img_idle.height * width) / img_idle.width
         );
@@ -90,13 +90,13 @@ function draw() {
         image(
           img_idle,
           cx,
-          cy-100,
+          cy - 100,
           width,
           (img_idle.height * width) / img_idle.width
         );
       }
 
-      image(layer_face_paint, cx, cy-100, width, height);
+      image(layer_face_paint, cx, cy - 100, width, height);
 
       drawPalette();
       break;
@@ -130,7 +130,7 @@ function touchStarted() {
     layer_face_paint.strokeWeight(5);
     layer_face_paint.noFill();
     layer_face_paint.stroke(picked_color);
-    layer_face_paint.line(mouseX, mouseY+100, mouseX, mouseY+100);
+    layer_face_paint.line(mouseX, mouseY + 100, mouseX, mouseY + 100);
     px = mouseX;
     py = mouseY;
   }
@@ -140,7 +140,7 @@ function touchStarted() {
 
 function touchMoved() {
   if (isPaintable()) {
-    layer_face_paint.line(mouseX, mouseY+100, px, py+100);
+    layer_face_paint.line(mouseX, mouseY + 100, px, py + 100);
     px = mouseX;
     py = mouseY;
   }
@@ -233,10 +233,10 @@ function drawPalette() {
 
   ellipseMode(CORNER);
   palette_colors.forEach((c, idx) => {
-    if(c===picked_color){
+    if (c === picked_color) {
       stroke(100);
       strokeWeight(2);
-    }else{
+    } else {
       noStroke();
     }
     fill(c);
