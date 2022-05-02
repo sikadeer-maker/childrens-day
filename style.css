@@ -3,15 +3,12 @@ body {
   margin: 0;
   padding: 0;
   background-color: #feeeed;
-  -webkit-text-size-adjust: none; /* 크롬, 사파리, 오페라 신버전 */
-  -ms-text-size-adjust: none; /* IE */
-  -moz-text-size-adjust: none; /* 파이어폭스 */
-  -o-text-size-adjust: none; /* 오페라 구버전 */
   height: 100%;
+  font-family: "ACCchildrenheartOTF-Regular";
 }
 
 #main {
-  height: 100%;
+  /* height: 100%; */
 }
 
 #main > p {
@@ -48,4 +45,26 @@ body {
     justify-content: center;
     align-items: center;
   }
+}
+
+img {
+  box-shadow: 2px 2px 2px #999;
+}
+
+@font-face {
+  font-family: "ACCchildrenheartOTF-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112-2@1.0/ACCchildrenheartOTF-Regular.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.credit {
+  text-align: center;
+  margin-top: 1em;
+}
+
+.credit > a {
+  text-decoration: none;
+  color: #1da1f2;
 }
