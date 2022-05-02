@@ -1,13 +1,30 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  background-color:#feeeed;
+  background-color: #feeeed;
 }
-canvas {
-  display: block;
+@media (orientation: portrait) {
+  /* Portrait 모드일 때 적용할 CSS */
+  img {
+    width: 100%;
+    height: auto;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 }
-img{
-  width: 100%;
-  height: auto;
+@media (orientation: landscape) {
+  /* Landscape 모드일 때 적용할 CSS */
+  img {
+    width: auto;
+    height: 100%;
+  }
+  canvas {
+    display: block;
+    width: auto;
+    height: 100%;
+  }
 }
-0
