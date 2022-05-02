@@ -46,7 +46,7 @@ function preload() {
 
 function setup() {
   photo = createCanvas(400, 600);
-  centerCanvas(photo);
+  // centerCanvas(photo);
 
   cx = width * 0.5;
   cy = height * 0.5;
@@ -190,10 +190,12 @@ function touchEnded() {
           " 저장할 수 있어요";
         let alt_text = createP(description);
         alt_text.class("animate__animated animate__fadeIn animate__delay-1s");
+        alt_text.parent("main");
 
         let canvas_data = canvas.toDataURL();
         let img_element = createImg(canvas_data, "sikadeer-photo-" + date);
         img_element.class("animate__animated animate__backInDown");
+        img_element.parent("main");
 
         photo.hide();
         noLoop();
@@ -267,11 +269,11 @@ function drawCameraButton() {
   );
 }
 
-function centerCanvas(target) {
-  const x = (windowWidth - width) / 2;
-  const y = (windowHeight - height) / 2;
-  target.position(x, y);
-}
+// function centerCanvas(target) {
+//   const x = (windowWidth - width) / 2;
+//   const y = (windowHeight - height) / 2;
+//   target.position(x, y);
+// }
 const isMobile = () => {
   const pcDevice = "win16|wind32|win64|mac|macintel";
   if (navigator.platform) {

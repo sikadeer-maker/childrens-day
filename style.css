@@ -3,6 +3,15 @@ body {
   margin: 0;
   padding: 0;
   background-color: #feeeed;
+  -webkit-text-size-adjust: none; /* 크롬, 사파리, 오페라 신버전 */
+  -ms-text-size-adjust: none; /* IE */
+  -moz-text-size-adjust: none; /* 파이어폭스 */
+  -o-text-size-adjust: none; /* 오페라 구버전 */
+}
+
+#main > p {
+  text-align: center;
+  font-size: 1.2em;
 }
 @media (orientation: portrait) {
   /* Portrait 모드일 때 적용할 CSS */
@@ -12,8 +21,8 @@ body {
   }
   canvas {
     display: block;
-    width: 100%;
-    height: auto;
+    width: 100% !important;
+    height: auto !important;
   }
 }
 @media (orientation: landscape) {
@@ -21,10 +30,13 @@ body {
   img {
     width: auto;
     height: 100%;
+    margin: 0 auto;
+    display: block;
   }
   canvas {
     display: block;
-    width: auto;
-    height: 100%;
+    width: auto !important;
+    height: 100% !important;
+    margin: 0 auto;
   }
 }
