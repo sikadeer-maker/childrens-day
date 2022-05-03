@@ -2,14 +2,13 @@ let img_idle,
   img_pressed,
   img_btn_picnic,
   img_btn_photo,
-  img_btn_cam_front,
-  img_btn_cam_back,
+  img_btn_korea,
+  img_btn_korea_other,
   img_bg_default;
 let cx, cy;
 let is_cam_on = false;
 let is_back_mode = true;
-let capture,
-  capture_back = undefined;
+let capture_back = undefined;
 let photo;
 
 let layer_face_paint;
@@ -49,15 +48,14 @@ function preload() {
   img_pressed = loadImage("assets/bambi_pressed.png");
   img_btn_picnic = loadImage("assets/btn_picnic.png");
   img_btn_photo = loadImage("assets/btn_photo.png");
-  img_btn_cam_front = loadImage("assets/btn_cam_front.png");
-  img_btn_cam_back = loadImage("assets/btn_cam_back.png");
+  img_btn_korea = loadImage("assets/btn_korea.png");
+  img_btn_korea_other = loadImage("assets/btn_korea_other.png");
   img_bg_default = loadImage("assets/bg_default.png");
   now_status = STATUS_ENUM.Painting;
 }
 
 function setup() {
   photo = createCanvas(400, 600);
-  // centerCanvas(photo);
 
   cx = width * 0.5;
   cy = height * 0.5;
@@ -65,7 +63,6 @@ function setup() {
   c_frame = color(0, 200);
 
   // init camera
-
   const frontCamera = {
     audio: false,
     video: {
@@ -74,9 +71,6 @@ function setup() {
       },
     },
   };
-  capture = createCapture(frontCamera);
-
-  capture.hide();
 
   if (isMobile()) {
     const backCamera = {
@@ -114,8 +108,6 @@ function draw() {
         (capture_back.width * height) / capture_back.height,
         height
       );
-    } else if (capture) {
-      image(capture, cx, cy, (capture.width * height) / capture.height, height);
     }
   } else {
     image(img_bg_default, cx, cy, width, height);
@@ -346,19 +338,19 @@ function drawCameraButton() {
 function drawCameraSwicthButton() {
   if (is_back_mode) {
     image(
-      img_btn_cam_front,
+      img_btn_korea_other,
       (cx / 5) * 2,
       palette_h + height / 8 - 10,
-      img_btn_cam_front.width * 0.2,
-      img_btn_cam_front.height * 0.2
+      img_btn_korea_other.width * 0.2,
+      img_btn_korea_other.height * 0.2
     );
   } else {
     image(
-      img_btn_cam_back,
+      img_btn_korea,
       (cx / 5) * 2,
       palette_h + height / 8 - 10,
-      img_btn_cam_back.width * 0.2,
-      img_btn_cam_back.height * 0.2
+      img_btn_korea.width * 0.2,
+      img_btn_korea.height * 0.2
     );
   }
 }
@@ -371,23 +363,4 @@ const isMobile = () => {
     }
   }
   return false; //desktop
-};
-
-const checkDevice = () => {
-  var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
-
-  if (varUA.indexOf("android") > -1) {
-    //안드로이드
-    return "android";
-  } else if (
-    varUA.indexOf("iphone") > -1 ||
-    varUA.indexOf("ipad") > -1 ||
-    varUA.indexOf("ipod") > -1
-  ) {
-    //IOS
-    return "ios";
-  } else {
-    //아이폰, 안드로이드 외
-    return "other";
-  }
 };
