@@ -102,10 +102,10 @@ function setup() {
 }
 
 function draw() {
-  image(img_bg_default, cx, cy, width, height);
-
+  if (now_status === STATUS_ENUM.Developed) return;
   imageMode(CENTER);
   if (is_cam_on) {
+    image(img_bg_default, cx, cy, width, height);
     if (isMobile() && is_back_mode && capture_back) {
       image(
         capture_back,
@@ -114,9 +114,11 @@ function draw() {
         (capture_back.width * height) / capture_back.height,
         height
       );
-    } else {
+    } else if (capture) {
       image(capture, cx, cy, (capture.width * height) / capture.height, height);
     }
+  } else {
+    image(img_bg_default, cx, cy, width, height);
   }
 
   switch (now_status) {
