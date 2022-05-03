@@ -1,7 +1,15 @@
-let img_idle, img_pressed, img_btn_picnic, img_btn_photo;
+let img_idle,
+  img_pressed,
+  img_btn_picnic,
+  img_btn_photo,
+  img_btn_cam_front,
+  img_btn_cam_back,
+  img_bg_default;
 let cx, cy;
 let is_cam_on = false;
-let capture;
+let is_back_mode = true;
+let capture,
+  capture_back = undefined;
 let photo;
 
 let layer_face_paint;
@@ -41,6 +49,9 @@ function preload() {
   img_pressed = loadImage("assets/bambi_pressed.png");
   img_btn_picnic = loadImage("assets/btn_picnic.png");
   img_btn_photo = loadImage("assets/btn_photo.png");
+  img_btn_cam_front = loadImage("assets/btn_cam_front.png");
+  img_btn_cam_back = loadImage("assets/btn_cam_back.png");
+  img_bg_default = loadImage("assets/bg_default.png");
   now_status = STATUS_ENUM.Painting;
 }
 
@@ -54,8 +65,31 @@ function setup() {
   c_frame = color(0, 200);
 
   // init camera
-  capture = createCapture(VIDEO);
+
+  const frontCamera = {
+    audio: false,
+    video: {
+      facingMode: {
+        exact: "user",
+      },
+    },
+  };
+  capture = createCapture(frontCamera);
+
   capture.hide();
+
+  if (isMobile()) {
+    const backCamera = {
+      audio: false,
+      video: {
+        facingMode: {
+          exact: "environment",
+        },
+      },
+    };
+    capture_back = createCapture(backCamera);
+    capture_back.hide();
+  }
 
   // init painting layer
   layer_face_paint = createGraphics(width, height);
@@ -68,11 +102,21 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  image(img_bg_default, cx, cy, width, height);
 
   imageMode(CENTER);
   if (is_cam_on) {
-    image(capture, cx, cy, (capture.width * height) / capture.height, height);
+    if (isMobile() && is_back_mode && capture_back) {
+      image(
+        capture_back,
+        cx,
+        cy,
+        (capture_back.width * height) / capture_back.height,
+        height
+      );
+    } else {
+      image(capture, cx, cy, (capture.width * height) / capture.height, height);
+    }
   }
 
   switch (now_status) {
@@ -117,6 +161,9 @@ function draw() {
 
       pop();
       drawPhotoframe(c_frame);
+      if (isMobile()) {
+        drawCameraSwicthButton();
+      }
       drawCameraButton();
       break;
     // 현상모드
@@ -176,29 +223,40 @@ function touchEnded() {
       break;
     // 촬영 모드
     case STATUS_ENUM.TakePhoto:
-      if (mouseY >= palette_h + height / 12 && mouseX > cx) {
-        // 저장하기
+      if (mouseY >= palette_h + height / 12) {
+        if (isMobile() && mouseX < cx) {
+          // 카메라 전환하기
+          is_back_mode = !is_back_mode;
+        } else if (mouseX > cx) {
+          // 저장하기
 
-        now_status = STATUS_ENUM.Developed;
+          now_status = STATUS_ENUM.Developed;
 
-        const date = new Date();
-        drawPhotoframe(255);
-
-        let description =
-          "아래 현상된 이미지를 " +
-          (isMobile() ? "꾹 눌러서" : "오른쪽 클릭해서") +
-          " 저장할 수 있어요";
-        let alt_text = createP(description);
-        alt_text.class("animate__animated animate__fadeIn animate__delay-1s");
-        alt_text.parent("main");
-
-        let canvas_data = canvas.toDataURL();
-        let img_element = createImg(canvas_data, "sikadeer-photo-" + date);
-        img_element.class("animate__animated animate__backInDown");
-        img_element.parent("main");
-
-        photo.hide();
-        noLoop();
+          const today = new Date();
+          drawPhotoframe(255);
+          is_cam_on = false;
+          if (!isMobile()) {
+            // 데스크탑
+            let description =
+              "아래 현상된 이미지를 오른쪽 클릭해서 저장할 수 있어요";
+            drawPhotoInHtml(description, today);
+          } else {
+            const device_name = checkDevice();
+            if (device_name === "android") {
+              // 안드로이드 : 자동 저장
+              let description = "아래 현상된 이미지를 자동으로 저장합니다.";
+              drawPhotoInHtml(description, today);
+              setTimeout(() => {
+                saveCanvas(photo, "sikadeer-" + today, "png");
+              }, 100);
+            } else if (device_name === "ios") {
+              // 아이폰 : 꾹 눌러서 저장
+              let description =
+                "아래 현상된 이미지를 꾹 눌러서 저장할 수 있어요";
+              drawPhotoInHtml(description, today);
+            }
+          }
+        }
       }
       break;
     // 현상모드
@@ -207,6 +265,20 @@ function touchEnded() {
   }
   // prevent default
   return false;
+}
+
+function drawPhotoInHtml(description, today) {
+  let alt_text = createP(description);
+  alt_text.class("animate__animated animate__fadeIn animate__delay-1s");
+  alt_text.parent("main");
+
+  let canvas_data = canvas.toDataURL();
+  let img_element = createImg(canvas_data, "sikadeer-photo-" + today);
+  img_element.class("animate__animated animate__backInDown");
+  img_element.parent("main");
+
+  photo.hide();
+  noLoop();
 }
 
 function drawPhotoframe(c) {
@@ -269,11 +341,26 @@ function drawCameraButton() {
   );
 }
 
-// function centerCanvas(target) {
-//   const x = (windowWidth - width) / 2;
-//   const y = (windowHeight - height) / 2;
-//   target.position(x, y);
-// }
+function drawCameraSwicthButton() {
+  if (is_back_mode) {
+    image(
+      img_btn_cam_front,
+      (cx / 5) * 2,
+      palette_h + height / 8 - 10,
+      img_btn_cam_front.width * 0.2,
+      img_btn_cam_front.height * 0.2
+    );
+  } else {
+    image(
+      img_btn_cam_back,
+      (cx / 5) * 2,
+      palette_h + height / 8 - 10,
+      img_btn_cam_back.width * 0.2,
+      img_btn_cam_back.height * 0.2
+    );
+  }
+}
+
 const isMobile = () => {
   const pcDevice = "win16|wind32|win64|mac|macintel";
   if (navigator.platform) {
@@ -282,4 +369,23 @@ const isMobile = () => {
     }
   }
   return false; //desktop
+};
+
+const checkDevice = () => {
+  var varUA = navigator.userAgent.toLowerCase(); //userAgent 값 얻기
+
+  if (varUA.indexOf("android") > -1) {
+    //안드로이드
+    return "android";
+  } else if (
+    varUA.indexOf("iphone") > -1 ||
+    varUA.indexOf("ipad") > -1 ||
+    varUA.indexOf("ipod") > -1
+  ) {
+    //IOS
+    return "ios";
+  } else {
+    //아이폰, 안드로이드 외
+    return "other";
+  }
 };
